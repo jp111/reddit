@@ -1,0 +1,34 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,('message' in globals())}}
+{{extend 'layout.html'}}
+<h2>
+	Categories
+	{{if auth.user:}}
+	{{if auth.user.email == "admin@gmail.com":}}
+	<button style="float:right;" align='right' onclick="document.location='{{=URL(r=request,f='add_category',)}}';">
+		Add Category
+	</button>
+	{{pass}}
+	{{pass}}
+
+
+</h2>
+<ul>
+	{{if auth.user:}}
+	<button  align='right' onclick="document.location='{{=URL(r=request,f='add_item',args=auth.user.id)}}';">
+		Add News Item
+	</button>
+	{{if (auth.user.email=="admin@gmail.com"):}}
+	<button  onclick="document.location='{{=URL(r=request,f='delete_user',)}}';">
+	Delete User(s)
+	</button>
+	{{pass}}
+	</br>
+	</br>
+	{{pass}}
+	{{for some in form:}}
+	{{=A(some.category.upper(), _href=URL(r=request,f='category_page',args=some.id))}}
+	</br>
+	</br>
+	{{pass}}
+</ul>
+

@@ -1,0 +1,111 @@
+timestamp: 2013-08-26T22:26:33.791914
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2013-08-26T22:26:33.919072
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-08-26T22:26:34.024375
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-08-26T22:26:34.138305
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2013-08-26T22:26:34.242129
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-08-26T22:26:34.355583
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2013-08-27T22:33:12.776398
+CREATE TABLE users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    username CHAR(512),
+    password CHAR(512),
+    email CHAR(512)
+);
+success!
+timestamp: 2013-08-29T23:22:02.455495
+CREATE TABLE item(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category CHAR(512),
+    heading CHAR(512),
+    url CHAR(512)
+);
+success!
+timestamp: 2013-08-30T01:35:51.619021
+ALTER TABLE item ADD item_rank INTEGER;
+timestamp: 2013-08-30T01:35:51.735311
+ALTER TABLE item ADD user_name CHAR(512);
+timestamp: 2013-08-30T03:48:16.887580
+CREATE TABLE comments(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item CHAR(512),
+    item_comment CHAR(512)
+);
+success!
+timestamp: 2013-08-30T03:50:33.362466
+ALTER TABLE comments ADD user_name CHAR(512);
+timestamp: 2013-09-01T02:07:15.535367
+ALTER TABLE item ADD userid INTEGER;
+timestamp: 2013-09-01T02:07:15.694901
+ALTER TABLE comments ADD userid INTEGER;
+timestamp: 2013-09-01T02:07:15.836798
+CREATE TABLE categories(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category CHAR(512)
+);
+success!
+timestamp: 2013-09-01T21:58:35.303762
+CREATE TABLE mylike(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    status INTEGER,
+    itemid INTEGER,
+    userid INTEGER REFERENCES item (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-09-01T23:09:50.301845
+ALTER TABLE item ADD totalp INTEGER;
+timestamp: 2013-09-02T02:46:12.362613
+ALTER TABLE comments ADD itemid CHAR(512);
+timestamp: 2013-09-02T12:45:18.074143
+ALTER TABLE comments ADD time_change TIMESTAMP;
+timestamp: 2013-09-02T20:56:08.337540
+ALTER TABLE item ADD time_change TIMESTAMP;

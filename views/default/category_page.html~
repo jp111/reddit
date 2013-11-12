@@ -1,0 +1,15 @@
+{{extend 'layout.html'}}
+{{if len(item) != 0 :}}
+{{category=db(db.categories.id == item[0]['category']).select()}}
+{{else:}}
+{{redirect(URL('nonews',))}}
+{{pass}}
+<h2>
+	{{=category[0].category}}
+</h2>
+{{for some in item:}}
+{{=some.heading}}
+<br/>
+<button onclick=" ;">
+</br>
+{{pass}}

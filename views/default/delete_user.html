@@ -1,0 +1,26 @@
+{{extend 'layout.html'}}
+
+{{if auth.user.email == "admin@gmail.com":}}
+
+{{if len(form)==0 :}}
+No user to delete!!
+{{else:}}
+{{for some in form:}}
+
+{{if some['email'] != "admin@gmail.com":}}
+
+{{=some['first_name'],some['last_name']}}
+
+<button  onclick="document.location='{{=URL(r=request,f='delete_given',args=some.id)}}';">
+	Delete User
+</button>
+<br/>
+<br/>
+
+{{pass}}
+
+{{pass}}
+
+{{pass}}
+
+{{pass}}

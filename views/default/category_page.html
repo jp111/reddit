@@ -1,0 +1,94 @@
+{{extend 'layout.html'}}
+{{if len(item) != 0 :}}
+{{category=db(db.categories.id == item[0]['category']).select()}}
+{{else:}}
+{{redirect(URL('nonews',))}}
+{{pass}}
+<h2>
+	{{=category[0].category}}
+</h2>
+{{for some in item:}}
+{{=A(some.heading, _href=some.url)}}
+<br/>
+
+<div style="float:right;">
+	Posted at:	{{=some.time_change}}
+</div>
+
+{{y='youtube'}}
+{{if y in some.url:}} 
+{{a=some.url.split('=')}}
+{{if(len(a)>1):}}
+{{fin=str(a[len(a)-1])}}
+{{endf="http://www.youtube.com/embed/"+fin}}
+<iframe width="210" height="172" src={{=endf}}> </iframe> </br>
+{{pass}}
+{{pass}}
+
+{{if auth.user:}}
+
+
+{{com=db(db.comments.itemid==some.id).select()}}
+{{fname=db(db.auth_user.id == some.userid).select()}}
+{{man=db((db.mylike.userid==auth.user.id) & (db.mylike.itemid==some.id) ).select()}}
+
+{{if (len(man)==0) or man[0].status==0 :}}
+<button  onclick="document.location='{{=URL(r=request,f='respy',args=[some.id,'1'])}}';">
+	Like
+</button>
+<button  onclick="document.location='{{=URL(r=request,f='respy',args=[some.id,'-1'])}}';">
+	Dislike
+</button>
+{{pass}}
+{{if (len(man)>0) and (man[0].status==1):}}
+<button  onclick="document.location='{{=URL(r=request,f='respy',args=[some.id,'0'])}}';">
+	Liked
+</button>
+<button  onclick="document.location='{{=URL(r=request,f='respy',args=[some.id,'-1'])}}';">
+	Dislike
+</button>
+{{pass}}
+{{if (len(man)>0) and (man[0].status==-1):}}
+<button  onclick="document.location='{{=URL(r=request,f='respy',args=[some.id,'1'])}}';">
+	Like
+</button>
+<button  onclick="document.location='{{=URL(r=request,f='respy',args=[some.id,'0'])}}';">
+	Disliked
+</button>
+{{pass}}
+{{if some.userid == auth.user.id:}}
+<button  onclick="document.location='{{=URL(r=request,f='edit',args=some.id)}}';">
+	Edit
+</button>
+{{pass}}
+{{if (some.userid == auth.user.id) or (auth.user.email=="admin@gmail.com"):}}
+<button  onclick="document.location='{{=URL(r=request,f='delete_item',args=some.id)}}';">
+	Delete
+</button>
+{{pass}}
+<button  onclick="document.location='{{=URL(r=request,f='comment',args=some.id)}}';">
+	Comment
+</button>
+</br>
+</br>
+{{if len(com)>0:}}
+<h4>
+	Comments:
+</h4>
+{{pass}}
+{{for comment in com:}}
+{{fname=db(db.auth_user.id == comment.userid).select(db.auth_user.first_name).last()}}
+<b>
+	{{=fname.first_name}}:</b>
+&nbsp;
+{{=comment.item_comment}}
+<div style="float:right">{{=comment.time_change}}</div>
+</br>
+{{pass}}
+</br>
+</br>
+{{else:}}
+LOG IN TO LIKE AND COMMENT
+{{pass}}
+{{pass}}
+

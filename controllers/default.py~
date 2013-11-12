@@ -1,0 +1,154 @@
+# -*- coding: utf-8 -*-
+# this file is released under public domain and you can use without limitations
+
+#########################################################################
+## This is a sample controller
+## - index is the default action of any application
+## - user is required for authentication and authorization
+## - download is for downloading files uploaded in the db (does streaming)
+## - call exposes all registered services (none by default)
+#########################################################################
+
+
+def index():
+	form=db(db.categories.id>0).select()
+	return dict(form=form)
+	print request.args
+#	if request.args == "me":
+#		response.flash= 'Sorry, no news found'
+	"""
+    example action using the internationalization operator T and flash
+    rendered by views/default/index.html or views/generic.html
+
+    if you need a simple wiki simple replace the two lines below with:
+    return auth.wiki()
+    """
+	response.flash = T("Welcome to web2py!")
+	return dict(message=T('Hello World'))
+
+
+def user():
+    """
+    exposes:
+    http://..../[app]/default/user/login
+    http://..../[app]/default/user/logout
+    http://..../[app]/default/user/register
+    http://..../[app]/default/user/profile
+    http://..../[app]/default/user/retrieve_password
+    http://..../[app]/default/user/change_password
+    http://..../[app]/default/user/manage_users (requires membership in 
+    use @auth.requires_login()
+        @auth.requires_membership('group name')
+        @auth.requires_permission('read','table name',record_id)
+    to decorate functions that need access control
+    """
+    return dict(form=auth())
+
+@cache.action()
+def download():
+    """
+    allows downloading of uploaded files
+    http://..../[app]/default/download/[filename]
+    """
+    return response.download(request, db)
+
+
+def call():
+    """
+    exposes services. for example:
+    http://..../[app]/default/call/jsonrpc
+    decorate with @services.jsonrpc the functions to expose
+    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+    """
+    return service()
+
+
+@auth.requires_signature()
+def data():
+    """
+    http://..../[app]/default/data/tables
+    http://..../[app]/default/data/create/[table]
+    http://..../[app]/default/data/read/[table]/[id]
+    http://..../[app]/default/data/update/[table]/[id]
+    http://..../[app]/default/data/delete/[table]/[id]
+    http://..../[app]/default/data/select/[table]
+    http://..../[app]/default/data/search/[table]
+    but URLs must be signed, i.e. linked with
+      A('table',_href=URL('data/tables',user_signature=True))
+    or with the signed load operator
+      LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
+    """
+    return dict(form=crud())
+	
+#my functions
+@auth.requires_login()
+def add_category():
+	form=SQLFORM(db.categories)
+	if form.process().accepted:
+		response.flash = 'category added'
+	
+	return dict(form=form)
+@auth.requires_login()
+def add_item():
+	form=SQLFORM(db.item)
+	if form.process().accepted:
+		response.flash = 'item added'
+		new_item=db(db.item.id>0).select().last()
+		new_item.userid=auth.user.id
+		new_item.update_record()
+	return dict(form=form)
+
+def category_page():
+#	print request.args
+	item=db(db.item.category == request.args(0,cast=int)).select()
+	return dict(item=item)
+
+def nonews():
+	return dict()
+@auth.requires_login()
+def respy():
+	var=request.args(1,cast=int)
+	print var
+	item=db(db.item.id == request.args(0,cast=int)).select()
+	exist=db(db.it)
+	db.mylike.insert(status=var,itemid=item.id,userid=auth.user.id)
+	db(db.mylike.id==request.args(0,cast=int)).select()
+	return dict()
+	
+"""
+@auth.requires_login()
+def view_comments():
+	item = db.item(request.args(0,cast=int)) or redirect(URL('index'))
+	db.comments.item_id.default = item.id
+	form = SQLFORM(db.comments)
+	form1= SQLFORM.factory(
+		Field('item_rank',type='integer'))
+	
+	if form.process().accepted:
+		row=db(db.comments.item_comment==request.vars.item_comment).select().last()
+		row.user_name=auth.user.email
+		row.update_record()
+		
+		can=db(db.flak.item_id==item.id).select()
+		if len(can)!=0:
+			can[0].comments_flag=True
+			can[0].all_flag=True
+			can[0].update_record()
+		response.flash = 'your comment is posted'
+	
+	if form1.process().accepted:
+		response.flash = 'your rating has been added'
+		project.num_rating = project.num_rating + 1
+		project.total_rating = int(project.total_rating) + int(request.vars.rating)
+		can=db(db.flak.project_id==project.id).select()
+		if len(can)!=0:
+			can[0].rating_flag=True
+			can[0].all_flag=True
+			can[0].update_record()
+		project.update_record()
+	
+	comments = db(db.comments.project_id==project.id).select()
+	
+	return dict(project=project, comments=comments, form=form,form1=form1)
+
+"""	
